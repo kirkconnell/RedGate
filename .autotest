@@ -1,0 +1,10 @@
+require 'autotest/fsevent'
+require 'autotest/growl'
+
+require './vendor/plugins/autotest/sound/sound.rb'
+Autotest::Sound.sound_path = "./vendor/plugins/autotest/sound/sound_fx/"
+
+Autotest.add_hook :initialize do |autotest|
+  %w{.git .svn .hg .DS_Store ._* vendor}.each {|exception| autotest.add_exception(exception) }
+  false
+end
