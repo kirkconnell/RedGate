@@ -23,4 +23,34 @@ describe Gate do
     end
   end
   
+  describe "loaded" do
+    before(:each) do
+      @gate.processing_list["test"] = lambda { |data| data[:some] == "value" }
+      @gate.receivers << "http://example.com/test"
+    end
+    
+    def mock_message(stubs = {})
+      @message ||= mock_model(Message, stubs.merge!({ :data => { :some => "value" } }))
+    end
+    
+    def mock_ar(stubs={})
+      @ar ||= mock("ActiveResource::Base", stubs.merge!({:save => true}))
+    end
+    
+    it "should be able to process messages through the gate" do
+      @gate.process mock_message
+    end
+    
+    it "should deliver message to receivers" do
+      Delivery::ActiveResourceDeliveryStrategy::MessageDelivery.stub!(:new).and_return(mock_ar)
+      @gate.deliver_to_receivers mock_message
+    end
+    
+    it "should not raise an error if no receivers are defined" do
+      @gate.receivers.clear
+      lambda {@gate.deliver_to_receivers(mock_message)}.should raise_error
+    end
+    
+  end
+  
 end

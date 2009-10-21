@@ -10,11 +10,11 @@ describe GatesController do
     
     # This is because ActiveResource will send the post as a hash which will contain
     # another hash inside with the data. 
-    it "should consider hash parameters as message in a post request" do
-      data = { :first => "first", :second => "second" }
-      post :receive, :gate_name => "apples", :data => data
-      assigns(:message).to_s.should be_eql(data.to_s)
-    end
+    # it "should consider hash parameters as message in a post request" do
+    #       data = { :first => "first", :second => "second" }
+    #       post :receive, :gate_name => "apples", :data => data
+    #       assigns(:message).to_s.should be_eql(data.to_s)
+    #     end
     
   end
 

@@ -15,7 +15,7 @@ describe Message do
   describe "processing gates" do
     
     def mock_gate
-      @mock_gate ||= mock("Gate")
+      @mock_gate ||= mock("Gate", :process => true)
     end
     
     before(:each) do
@@ -28,9 +28,10 @@ describe Message do
       @message.gate.should equal(mock_gate)
     end
     
-    # it "should deliver itself through its gate" do
-    #       @message.deliver
-    #     end
+    it "should deliver itself through its gate" do
+      mock_gate.should_receive(:process).with(@message)
+      @message.deliver!
+    end
     
   end
   
