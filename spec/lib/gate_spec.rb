@@ -3,6 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe Gate do
   before(:each) do
     @gate = Gate.new :test
+    Gate.register @gate
+  end
+  
+  it "should provide a way to look for existing gates by name" do
+    Gate.find("test").should_not be_nil
   end
   
   describe "freshly created" do
@@ -37,12 +42,16 @@ describe Gate do
       @ar ||= mock("ActiveResource::Base", stubs.merge!({:save => true}))
     end
     
+    def mock_strategy(stubs={})
+      @strategy ||= mock(DeliveryStrategy, stubs.merge!({:load_with => true, :deliver => true}))
+    end
+    
     it "should be able to process messages through the gate" do
       @gate.process mock_message
     end
     
     it "should deliver message to receivers" do
-      Delivery::ActiveResourceDeliveryStrategy::MessageDelivery.stub!(:new).and_return(mock_ar)
+      DeliveryStrategy.stub!(:for).and_return(mock_strategy)
       @gate.deliver_to_receivers mock_message
     end
     

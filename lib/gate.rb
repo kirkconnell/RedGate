@@ -15,6 +15,11 @@ class Gate
     @@currently_configuring
   end
   
+  def self.find(gate_name)
+    gate_name = gate_name.to_sym if gate_name.instance_of?(String)
+    registered_gates[gate_name]
+  end
+  
   attr_accessor :name
   attr_reader :processing_list, :receivers
 
