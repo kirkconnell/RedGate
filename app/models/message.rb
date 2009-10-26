@@ -7,6 +7,7 @@ class Message < ActiveRecord::Base
   
   def deliver!
     gate.process self
+    gate.deliver_to_receivers self
   end
     
 end

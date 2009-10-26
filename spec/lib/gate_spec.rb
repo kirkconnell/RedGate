@@ -6,11 +6,7 @@ describe Gate do
     Gate.register @gate
   end
   
-  it "should provide a way to look for existing gates by name" do
-    Gate.find("test").should_not be_nil
-  end
-  
-  describe "freshly created" do
+  describe "during configuration process" do
     it "should register created gates on a list" do
       Gate.registered_gates[:test].should equal(@gate)
     end
@@ -28,10 +24,14 @@ describe Gate do
     end
   end
   
-  describe "loaded" do
+  describe "configured and initialized" do
     before(:each) do
       @gate.processing_list["test"] = lambda { |data| data[:some] == "value" }
       @gate.receivers << "http://example.com/test"
+    end
+    
+    it "should provide a way to look for existing gates by name" do
+      Gate.find("test").should_not be_nil
     end
     
     def mock_message(stubs = {})
@@ -55,7 +55,7 @@ describe Gate do
       @gate.deliver_to_receivers mock_message
     end
     
-    it "should not raise an error if no receivers are defined" do
+    it "should raise an error if no receivers are defined" do
       @gate.receivers.clear
       lambda {@gate.deliver_to_receivers(mock_message)}.should raise_error
     end

@@ -241,3 +241,40 @@ vendor
   External libraries that the application depends on. Also includes the plugins subdirectory.
   If the app has frozen rails, those gems also go here, under vendor/rails/.
   This directory is in the load path.
+
+== YUML Script - Use Case
+(note: Figure 2.1)
+[System Integrator]-(Deploys Gate Config {bg:lightblue})
+[Sender]-(Post a Message {bg:lightblue})
+(Post a Message {bg:lightblue})>(Process Message {bg:lightblue})
+(Post a Message {bg:lightblue})>(Deliver Message {bg:lightblue})
+
+== YUML Script - Class Model
+[ActionController::Base{bg:orange}]++-[ActionController::Routing::Routes{bg:orange}]
+[ActionController::Base]^[ApplicationController]
+[ApplicationController]^[GatesController|receive();retrieve()]
+[GateBuilder::Initializer]uses-.->[main:Object{bg:orange}|gate();process();receiver()]
+[main:Object]configures-.->[Gate|self.registered_gates;self.currently_configuring|self.registered();self.find()|name;processing_list;receivers|process();deliver_to_receivers()]
+[GatesController|receive();retrieve()]uses-.->[Gate]
+[LoggedAction|logged_action()]^[Gate]
+[ActiveRecord::Base{bg:orange}]^[Message|deliver!()]
+[Message]+-[Gate]
+[Gate]uses-.->[DeliveryStrategy|self.for()]
+[DeliveryStrategy]creates-.->[ActiveResourceDeliveryStrategy|load_with();deliver()]
+[Gate]uses-.->[ActiveResourceDeliveryStrategy]
+[ActiveResource::Base{bg:orange}]^[MessageDelivery{bg:green}]
+[ActiveResourceDeliveryStrategy]++-[MessageDelivery]
+
+== YUML Script - Activity Diagram (Posting on GatesController)
+(start)post->(receive message)->(look for gate)-><d1>
+<d1>found->(save message)-><d2>
+<d2>saved->(queue message)->|a|
+|a|->(deliver message)
+|a|->(render success)->(end)
+<d2>not saved->(render error)->(end)
+<d1>not found->(render error)->(end)
+
+== YUML Script - Database Schema
+[delayed_jobs|priority;attempts;handler;last_error;run_at;locked_at;failed_at;locked_by;created_at;updated_at]
+[schema_migrations|version]
+[messages|data;created_at;updated_at;gate_name{bg:lightblue}]

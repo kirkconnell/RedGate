@@ -8,14 +8,17 @@ describe Message do
     }
   end
 
-  it "should create a new instance given valid attributes" do
-    Message.create!(@valid_attributes)
-  end 
+  describe "management activities" do
+    it "should create a new instance given valid attributes" do
+      Message.create!(@valid_attributes)
+    end
+  end
+   
   
   describe "processing gates" do
     
     def mock_gate
-      @mock_gate ||= mock("Gate", :process => true)
+      @mock_gate ||= mock("Gate", :process => true, :deliver_to_receivers => true)
     end
     
     before(:each) do

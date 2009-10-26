@@ -1,0 +1,60 @@
+(in /Users/kirk/workspace/redgate.git)
+
+ApplicationController
+- should recognize gate URIs
+
+DeliveryStrategy
+- should create options based on the receiver
+- should allow https uris
+- should allow uris without the trailing /
+- should complain if the receiver uri is malformed
+- should return an ActiveResourceDeliveryStrategy if it receives a uri
+
+LoggedAction
+- should log a successful run of an action
+- should log an error on a run of an action
+
+GatesController receiving messages
+- should reject posts to nonexistent gates
+- should accept posts to existing gates
+- should consider hash parameters as message in a post request
+- should save the message to the database
+- should not save invalid messages to the database
+- should enqueue the message for processing
+
+GateBuilder::Initializer
+- should run the gate initialization process
+
+GateBuilder
+- should receive a symbol with the name of the gate
+- should store the gate object in the list of registered gates
+- should define one or more processes for the gate been configured
+- should define one or more receivers for a gate's messages
+
+Gate configured and initialized
+- should provide a way to look for existing gates by name
+- should be able to process messages through the gate
+- should deliver message to receivers
+- should raise an error if no receivers are defined
+
+Gate during configuration process
+- should register created gates on a list
+- should be saved as the current configuration gate
+- should have an empty list of blocks to execute on processing
+- should have an empty list of receivers
+
+Delivery::ActiveResourceDeliveryStrategy
+- should generate instructions for ActiveResource reflection
+- should create an ActiveResource object based on the receiver
+- should post the ActiveResource object to the receiver
+
+Message processing gates
+- should find the gate it belongs to
+- should deliver itself through its gate
+
+Message management activities
+- should create a new instance given valid attributes
+
+Finished in 0.290084 seconds
+
+33 examples, 0 failures

@@ -10,16 +10,16 @@ describe Delivery::ActiveResourceDeliveryStrategy do
     @strat = Delivery::ActiveResourceDeliveryStrategy.new(:host => "http://test.example.com/", :element => "test")
   end
   
-  it "should generate instructions" do
+  it "should generate instructions for ActiveResource reflection" do
     @strat.instructions.should == "self.site = 'http://test.example.com/'; self.element_name = 'test';"
   end
   
-  it "should create an active resource object based on the receiver" do
+  it "should create an ActiveResource object based on the receiver" do
     data = {:first => "information"}
     @strat.load_with(data).should be_kind_of(ActiveResource::Base)
   end
   
-  it "should post the active resource object to the receiver" do
+  it "should post the ActiveResource object to the receiver" do
     @strat.ar = mock_ar(:save => true)
     @strat.ar.should_receive(:save).and_return(:true)
     
