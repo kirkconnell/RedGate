@@ -1,4 +1,4 @@
-.h Welcome to RedGate
+== Welcome to RedGate
 RedGate will be a System Integration Server that handles messages using REST. RedGate will target web applications that send resources following the conventions and structure defined by the ActiveResource library of Ruby on Rails. RedGate will aid developers integrate distributed systems by providing a well known set of integration patterns to work with.
 
 RedGate is currently in a prototype stage.
