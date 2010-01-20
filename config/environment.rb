@@ -6,6 +6,18 @@ RAILS_GEM_VERSION = '2.3.4' unless defined? RAILS_GEM_VERSION
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+# adding extra functionality to hash tables
+class Hash
+  def method_missing(method, *args)
+    if method.to_s.last == "="
+      self[method.to_s.chop.to_sym] = args[0]
+    else
+      return self[method] if self.keys.collect(&:to_sym).include?(method)
+      super
+    end
+  end
+end
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
