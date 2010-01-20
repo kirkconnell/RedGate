@@ -31,5 +31,6 @@ private
   
   def log(event)
     logger.info event unless logger.nil?
+    #p event
   end
 end

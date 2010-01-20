@@ -2,13 +2,12 @@ class Gate
   include LoggedAction
   
   def self.register(gate)
-    @@gates ||= {}
-    @@gates[gate.name] = gate
+    GATES[gate.name] = gate
     @@currently_configuring = gate
   end
   
   def self.registered_gates
-    @@gates
+    GATES
   end
   
   def self.currently_configuring

@@ -5,10 +5,10 @@ class GatesController < ApplicationController
     respond_to do |format|
       if gate
         data = get_data_from(params)
-        @message = Message.new(:data => data, :gate_name => gate.name)
+        @message = Message.new(:data => data, :gate_name => gate.name.to_s)
         if @message.save
           @message.send_later(:deliver!)
-          format.xml {render :xml => @message, :status => :created }
+          format.xml {render :nothing => true, :status => :created }
         else
           @error = { :error => "Message couldn't be saved. \n #{@message.errors}" }
           format.xml { render :xml => @error, :status => :unprocessable_entity }

@@ -13,7 +13,7 @@ def receiver(host)
   Gate.currently_configuring.receivers << host
 end
 
-class GateBuilder::Initializer
+class GateBuilder::Initializer  
   def self.run
     yield
   end
