@@ -36,6 +36,11 @@ describe Message do
       @message.deliver!
     end
     
+    it "should record a measurement for the operation" do
+      Measurement.should_receive(:record).with(@message)
+      @message.deliver!
+    end
+    
   end
   
 end
