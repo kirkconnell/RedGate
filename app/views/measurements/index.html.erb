@@ -1,0 +1,25 @@
+<h1>Performance</h1>
+<table width="100%" border="0">
+  <caption>
+  	Gate Performance
+  </caption>
+  <tr>
+    <th scope="col">Gate</th>
+    <th scope="col">Message Id</th>
+    <th scope="col">Received</th>
+    <th scope="col">Sent</th>
+    <th scope="col">Performance</th>
+  </tr>
+<% @measurements.each do |measurement| %>
+  <tr>
+    <td><%= measurement.gate_name %></td>
+    <td><%= measurement.message_id %></td>
+    <td><%= measurement.received_at %></td>
+    <td><%= measurement.sended_at %></td>
+    <td><%= measurement.interval %></td>
+		<td><%= link_to 'Show', measurement %></td>
+    <td><%= link_to 'Destroy', measurement, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<p>&nbsp;</p>

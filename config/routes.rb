@@ -1,4 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :measurements
   
   map.gate 'gates/:gate_name', :controller => 'gates', :action => 'retrieve', 
               :conditions => {:method => :get}

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+				"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+	<title>Measurements: <%= controller.action_name %></title>
+	<%= stylesheet_link_tag 'scaffold' %>
+	<%= stylesheet_link_tag 'measurements' %>
+</head>
+
+<body class="report-view">
+
+<div id="container">
+  <div id="header">
+    <h1>RedGate - Message Measurements</h1>
+  </div>
+
+  <div id="sidebar">
+    <h3>Options</h3>
+    <p>The background color on this div will only show for the length of the content. If you'd like a dividing line instead, place a border on the right side of the #mainContent div if the #mainContent div will always contain more content than the #sidebar div. </p>
+    <p>Donec eu mi sed turpis feugiat feugiat. Integer turpis arcu, pellentesque  eget, cursus et, fermentum ut, sapien. </p>
+  </div>
+
+  <div id="mainContent">
+		<p style="color: green"><%= flash[:notice] %></p>
+    <%= yield %>
+	</div>
+	
+	<br class="clearfloat" />
+  
+	<div id="footer">
+    <p>RedGate is developed by the CIS Department of Kansas State University</p>
+	</div>
+</div>
+</body>
+</html>
+

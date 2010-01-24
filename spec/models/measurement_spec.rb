@@ -39,7 +39,7 @@ describe Measurement do
   
   it "should calculate the time interval between message arrival and message departure" do
     arrival_time = 10.minutes.ago
-    measurement.stub!(:created_at => arrival_time + 10.minutes)
+    measurement.stub!(:sended_at => arrival_time + 10.minutes)
     
     message :created_at => arrival_time
     measurement.message = message

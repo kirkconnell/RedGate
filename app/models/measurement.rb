@@ -12,6 +12,6 @@ class Measurement < ActiveRecord::Base
   end
   
   def interval
-    created_at - received_at
+    sended_at - received_at
   end
 end
