@@ -15,7 +15,7 @@
 		<td><%= measurement.gate_name %></td>
     <td><%= measurement.received_at.to_s :db %></td>
     <td><%= measurement.created_at.to_s :db %></td>
-    <td><%= measurement.interval.to_s %></td>
+    <td><%= "%.4f" % measurement.interval.to_s %></td>
     <td><%= link_to 'Destroy', measurement, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
