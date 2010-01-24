@@ -22,8 +22,8 @@ describe Measurement do
   end
   
   it "should record measurement for gate" do
-    sample_date = DateTime.now
-    DateTime.stub!(:now).and_return(sample_date)
+    sample_date = Time.now
+    Time.stub!(:now).and_return(sample_date)
     Measurement.should_receive(:create!).with(:message_id => message.id, 
                                               :gate_name => message.gate_name,
                                               :sent_at => sample_date)
