@@ -12,6 +12,13 @@ describe Message do
     it "should create a new instance given valid attributes" do
       Message.create!(@valid_attributes)
     end
+    
+    it "should store the float value of the current time it was received" do
+      moment = Time.now
+      Time.stub!(:now).and_return(moment)
+      m = Message.create!(@valid_attributes)
+      m.exactly_received_at.should == moment.to_f
+    end
   end
    
   

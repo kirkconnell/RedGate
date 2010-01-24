@@ -2,6 +2,10 @@ class Message < ActiveRecord::Base
   serialize :data
   has_one :measurement, :dependent => :destroy
   
+  def before_create
+    self.exactly_received_at = Time.now.to_f
+  end
+  
   def gate
     Gate.registered_gates[self.gate_name.to_sym]
   end

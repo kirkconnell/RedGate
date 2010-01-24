@@ -5,13 +5,14 @@ describe "/measurements/index.html.erb" do
   
   def message(stubs = {})
     @message ||= mock_model(Message, {:id => 1, :gate_name => :gate,
-                                      :created_at => DateTime.now}.merge(stubs))
+                                      :exactly_received_at => Time.now.to_f,
+                                      :created_at => Time.now}.merge(stubs))
   end
   
   before(:each) do
     assigns[:measurements] = [
-      stub_model(Measurement, :message => message, :sent_at => DateTime.now),
-      stub_model(Measurement, :message => message, :sent_at => DateTime.now)
+      stub_model(Measurement, :message => message, :created_at => Time.now, :sent_at => Time.now.to_f),
+      stub_model(Measurement, :message => message, :created_at => Time.now, :sent_at => Time.now.to_f)
     ]
   end
 

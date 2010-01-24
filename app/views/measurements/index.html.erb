@@ -3,20 +3,19 @@
   	<strong>Gate Performance</strong>
   </caption>
   <tr>
-    <th scope="col">Gate</th>
-    <th scope="col">Message Id</th>
+    <th scope="col">Id</th>
+		<th scope="col">Gate</th>
     <th scope="col">Received</th>
     <th scope="col">Sent</th>
-    <th scope="col">Performance</th>
+    <th scope="col">Int</th>
   </tr>
 <% @measurements.each do |measurement| %>
   <tr>
-    <td><%= measurement.gate_name %></td>
     <td><%= measurement.message_id %></td>
-    <td><%= measurement.received_at %></td>
-    <td><%= measurement.sent_at %></td>
-    <td><%= measurement.interval %></td>
-		<td><%= link_to 'Show', measurement %></td>
+		<td><%= measurement.gate_name %></td>
+    <td><%= measurement.received_at.to_s :db %></td>
+    <td><%= measurement.created_at.to_s :db %></td>
+    <td><%= measurement.interval.to_s %></td>
     <td><%= link_to 'Destroy', measurement, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>

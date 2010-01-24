@@ -26,24 +26,31 @@ describe Measurement do
     Time.stub!(:now).and_return(sample_date)
     Measurement.should_receive(:create!).with(:message_id => message.id, 
                                               :gate_name => message.gate_name,
-                                              :sent_at => sample_date)
+                                              :sent_at => sample_date.to_f)
     Measurement.record message
   end
   
-  it "should calculate the received date" do
+  it "should calculate the received time" do
     arrival_time = 10.minutes.ago
     message :created_at => arrival_time
     measurement.message = message
     measurement.received_at.should == arrival_time
   end
   
+  it "should calculate the exact received time" do
+    arrival_time = 10.minutes.ago
+    message :exactly_received_at => arrival_time.to_f
+    measurement.message = message
+    measurement.exactly_received_at.should == arrival_time.to_f
+  end
+  
   it "should calculate the time interval between message arrival and message departure" do
     arrival_time = 10.minutes.ago
-    measurement.stub!(:sent_at => arrival_time + 10.minutes)
+    measurement.stub!(:sent_at => (arrival_time + 10.minutes).to_f)
     
-    message :created_at => arrival_time
+    message :exactly_received_at => arrival_time.to_f
     measurement.message = message
-    measurement.interval.should == 10.minutes
+    measurement.interval.should == 10.minutes.to_f
   end
   
 end
