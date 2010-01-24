@@ -4,7 +4,7 @@ class Measurement < ActiveRecord::Base
   def self.record(message)
     Measurement.create! :message_id => message.id,
                         :gate_name => message.gate_name,
-                        :sended_at => DateTime.now
+                        :sent_at => DateTime.now
   end
   
   def received_at
@@ -12,6 +12,6 @@ class Measurement < ActiveRecord::Base
   end
   
   def interval
-    sended_at - received_at
+    sent_at - received_at
   end
 end

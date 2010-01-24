@@ -5,7 +5,7 @@ describe Measurement do
     @valid_attributes = {
       :gate_name => "value for gate_name",
       :message_id => 1,
-      :sended_at => Time.now
+      :sent_at => Time.now
     }
   end
   
@@ -26,7 +26,7 @@ describe Measurement do
     DateTime.stub!(:now).and_return(sample_date)
     Measurement.should_receive(:create!).with(:message_id => message.id, 
                                               :gate_name => message.gate_name,
-                                              :sended_at => sample_date)
+                                              :sent_at => sample_date)
     Measurement.record message
   end
   
@@ -39,7 +39,7 @@ describe Measurement do
   
   it "should calculate the time interval between message arrival and message departure" do
     arrival_time = 10.minutes.ago
-    measurement.stub!(:sended_at => arrival_time + 10.minutes)
+    measurement.stub!(:sent_at => arrival_time + 10.minutes)
     
     message :created_at => arrival_time
     measurement.message = message

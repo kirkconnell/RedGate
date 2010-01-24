@@ -10,8 +10,8 @@ describe "/measurements/index.html.erb" do
   
   before(:each) do
     assigns[:measurements] = [
-      stub_model(Measurement, :message => message, :sended_at => DateTime.now),
-      stub_model(Measurement, :message => message, :sended_at => DateTime.now)
+      stub_model(Measurement, :message => message, :sent_at => DateTime.now),
+      stub_model(Measurement, :message => message, :sent_at => DateTime.now)
     ]
   end
 
