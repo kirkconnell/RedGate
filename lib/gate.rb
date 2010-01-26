@@ -42,7 +42,7 @@ class Gate
     
     receivers.each do |receiver|
       logged_action "Delivering Message", receiver do
-        strat = DeliveryStrategy.for receiver
+        strat = DeliveryStrategy.for name, receiver
         strat.load_with(message.data)
         strat.deliver
       end
