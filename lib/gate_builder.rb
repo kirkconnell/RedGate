@@ -13,6 +13,10 @@ def receiver(host)
   Gate.currently_configuring.receivers << host
 end
 
+def receivers(*hosts)
+  hosts.each { |h| Gate.currently_configuring.receivers << h }
+end
+
 class GateBuilder::Initializer  
   def self.run
     yield

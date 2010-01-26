@@ -4,15 +4,35 @@ class Delivery::ActiveResourceDeliveryStrategy
   def initialize(options={})
     @host = options[:host]
     @element = options[:element]
+    @gate_name = options[:gate]
+    @stored_classes = {}
   end
   
   def instructions
     "self.site = '#{@host}'; self.element_name = '#{@element}';" unless @host.blank? || @element.blank?
   end
   
+  def ar_class_name
+    "#{@gate_name.to_s.classify}Delivery"
+  end
+  
+  def ar_key
+    [@gate_name, @host].join('-')
+  end
+  
   def load_with(data)
-    eval "class MessageDelivery < ActiveResource::Base; #{instructions} end"
-    self.ar = eval("MessageDelivery.new(data)")
+    unless stored_type_for(@gate_name, @host)
+      eval "class #{ar_class_name} < ActiveResource::Base; #{instructions} end"
+      self.ar = eval("#{ar_class_name}.new(data)")
+      @stored_classes[ar_key] = self.ar.class
+      self.ar
+    else
+      self.ar = stored_type_for(@gate_name, @host).new(data)
+    end
+  end
+  
+  def stored_type_for(gate, host)
+    @stored_classes[ar_key]
   end
   
   def deliver

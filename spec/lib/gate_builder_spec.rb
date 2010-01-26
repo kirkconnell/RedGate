@@ -22,11 +22,19 @@ describe GateBuilder do
     Gate.currently_configuring.processing_list.should be_include("testing process")
   end
   
-  it "should define one or more receivers for a gate's messages" do
+  it "should define one receiver for a gate's messages" do
     g = gate(:name)
     receiver "http://www.google.com"
     
     g.receivers.should be_include("http://www.google.com")
+  end
+  
+  it "should define multiple receivers for a gate's messages" do
+    g = gate(:name)
+    receivers "http://www.google.com", "http://www.yahoo.com"
+    
+    g.receivers.should be_include("http://www.google.com")
+    g.receivers.should be_include("http://www.yahoo.com")
   end
     
 end
