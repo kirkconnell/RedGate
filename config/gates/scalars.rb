@@ -1,2 +1,2 @@
 gate :scalars
-receiver "http://localhost:4000/scalar_messages"
+receiver "http://rogue2.beocat:4000/scalar_messages"
