@@ -1,6 +1,6 @@
 module Delayed
   class Worker
-    @@sleep_delay = 5
+    @@sleep_delay = 1
     
     cattr_accessor :sleep_delay
 
