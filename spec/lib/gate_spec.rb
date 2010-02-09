@@ -30,10 +30,6 @@ describe Gate do
       @gate.receivers << "http://example.com/test"
     end
     
-    it "should provide a way to look for existing gates by name" do
-      Gate.find("test").should_not be_nil
-    end
-    
     def mock_ar(stubs={})
       @ar ||= mock("ActiveResource::Base", stubs.merge!({:save => true}))
     end
@@ -42,52 +38,62 @@ describe Gate do
       @strategy ||= mock(DeliveryStrategy, stubs.merge!({:load_with => true, :deliver => true}))
     end
     
-    it "should be able to process messages through the gate" do
-      @gate.process mock_message
+    it "should provide a way to look for existing gates by name" do
+      Gate.find("test").should_not be_nil
     end
     
-    it "should deliver message to receivers" do
-      DeliveryStrategy.stub!(:for).and_return(mock_strategy)
-      @gate.deliver_to_receivers mock_message
+    
+    describe "processing messages" do
+      it "should be able to process messages through the gate" do
+        @gate.process mock_message
+      end
+
+      it "should set the processing message as the current message" do
+        Message.should_receive(:current=).and_return(mock_message)
+        @gate.process mock_message
+      end
+
+      it "should allow messages to be discarded when running a process" do
+        @gate.processing_list.clear
+        @gate.processing_list["discarding"] = lambda { |data| discard }
+        mock_message.should_receive(:discard!)
+        @gate.process mock_message
+      end
+
+      it "should not processes discarded messages" do
+        m = mock_message(:discarded? => true)
+        m.should_receive(:discarded?).and_return(true)
+        @gate.should_not_receive(:processing_list)
+        @gate.process m
+      end
+
+      it "should check if the message is discarded after every processing" do
+        m = mock_message
+        m.should_receive(:discarded?).twice.and_return(false)
+        @gate.process m
+      end
     end
     
-    it "should raise an error if no receivers are defined" do
-      @gate.receivers.clear
-      lambda {@gate.deliver_to_receivers(mock_message)}.should raise_error
+    describe "delivering messages" do
+      it "should not deliver discarded messages" do
+        m = mock_message(:discarded? => true)
+        m.should_receive(:discarded?).and_return(true)
+        @gate.should_not_receive(:deliver_to_receivers)
+        @gate.deliver m
+      end
+      
+      describe "delivering to one or more receivers" do
+        it "should be able to deliver message to receivers" do
+          DeliveryStrategy.stub!(:for).and_return(mock_strategy)
+          @gate.deliver_to_receivers mock_message
+        end
+
+        it "should raise an error if no receivers are defined" do
+          @gate.receivers.clear
+          lambda {@gate.deliver_to_receivers(mock_message)}.should raise_error
+        end
+      end
     end
-    
-    it "should provide a way of getting a reference to the current message" do
-      Message.should_receive(:current=).and_return(mock_message)
-      @gate.process mock_message
-    end
-    
-    it "should allow messages to be discarded when running a process" do
-      @gate.processing_list.clear
-      @gate.processing_list["discarding"] = lambda { |data| discard }
-      mock_message.should_receive(:discard!)
-      @gate.process mock_message
-    end
-    
-    it "should not processes discarded messages" do
-      m = mock_message(:discarded? => true)
-      m.should_receive(:discarded?).and_return(true)
-      @gate.should_not_receive(:processing_list)
-      @gate.process m
-    end
-    
-    it "should check if the message is discarded after every processing" do
-      m = mock_message
-      m.should_receive(:discarded?).twice.and_return(false)
-      @gate.process m
-    end
-    
-    it "should not deliver discarded messages" do
-      m = mock_message(:discarded? => true)
-      m.should_receive(:discarded?).and_return(true)
-      @gate.should_not_receive(:receivers)
-      @gate.deliver_to_receivers m
-    end
-    
   end
   
 end

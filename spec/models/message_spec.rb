@@ -29,7 +29,7 @@ describe Message do
   
   describe "processing gates" do 
     def mock_gate
-      @mock_gate ||= mock("Gate", :process => true, :deliver_to_receivers => true)
+      @mock_gate ||= mock("Gate", :process => true, :deliver => true)
     end
     
     before(:each) do

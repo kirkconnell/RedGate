@@ -42,8 +42,12 @@ class Gate
     end
   end
   
-  def deliver_to_receivers(message)
+  def deliver(message)
     return if message.discarded?
+    deliver_to_receivers(message)
+  end
+  
+  def deliver_to_receivers(message)
     raise "No receivers have been defined." if receivers.empty?
     
     receivers.each do |receiver|
