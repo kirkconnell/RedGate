@@ -36,6 +36,22 @@ describe GateBuilder do
     g.receivers.should be_include("http://www.google.com")
     g.receivers.should be_include("http://www.yahoo.com")
   end
+  
+  describe "message queue configuration" do
+    it "should accept parameters for creating a message queue" do
+      gate(:name, :queue => true).should be_queue
+    end
+    
+    it "should not allow the configuration of one receiver" do
+      gate(:name, :queue => true)
+      lambda { receiver "http://www.google.com" }.should raise_error
+    end
+    
+    it "should not allow the configuration of receivers" do
+      gate(:name, :queue => true)
+      lambda { receivers "http://www.google.com" }.should raise_error
+    end
+  end
     
 end
 

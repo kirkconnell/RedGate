@@ -24,6 +24,12 @@ describe Message do
       Message.current = @message
       Message.current.should == @message
     end
+    
+    it "should identify itself as in a queue" do
+      m = Message.new
+      m.in_queue = true
+      m.should be_valid
+    end
   end
    
   

@@ -3,7 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe Gate do
   before(:each) do
     @gate = Gate.new :test
-    Gate.register @gate
   end
   
   describe "during configuration process" do
@@ -80,6 +79,15 @@ describe Gate do
         m.should_receive(:discarded?).and_return(true)
         @gate.should_not_receive(:deliver_to_receivers)
         @gate.deliver m
+      end
+      
+      it "should figure out if it's delivering through ActiveResource of through a message queue" do
+        m = mock_message(:save => true, :in_queue= => true)
+        m.should_receive(:save).and_return(true)
+        
+        g = Gate.new :queued, :queue => true
+        g.should_not_receive(:deliver_to_receivers)
+        g.deliver m
       end
       
       describe "delivering to one or more receivers" do

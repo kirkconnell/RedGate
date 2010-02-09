@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100208234532) do
+ActiveRecord::Schema.define(:version => 20100209222431) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(:version => 20100208234532) do
     t.string   "gate_name"
     t.float    "exactly_received_at"
     t.boolean  "discarded"
+    t.boolean  "in_queue"
   end
 
 end

@@ -28,7 +28,12 @@ class Gate
     self.name = name
     @processing_list = {}
     @receivers = []
+    @options = {:queue => false}.merge(options)
     Gate.register self
+  end
+  
+  def queue?
+    @options[:queue]
   end
   
   def process(message)
@@ -44,7 +49,12 @@ class Gate
   
   def deliver(message)
     return if message.discarded?
-    deliver_to_receivers(message)
+    if queue?
+      message.in_queue = true
+      message.save
+    else
+      deliver_to_receivers(message)
+    end
   end
   
   def deliver_to_receivers(message)
