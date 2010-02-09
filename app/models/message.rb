@@ -17,5 +17,18 @@ class Message < ActiveRecord::Base
     # todo: define a configuration to disable performance measurements
     Measurement.record self
   end
+  
+  def discard!
+    self.update_attribute(:discarded, true)
+  end
+
+  # todo: make threadsafe
+  def self.current=(message)
+    @@current = message
+  end
+  
+  def self.current
+    @@current
+  end
     
 end

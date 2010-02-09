@@ -53,3 +53,8 @@ Spec::Runner.configure do |config|
   #
   # For more information take a look at Spec::Runner::Configuration and Spec::Runner
 end
+
+def mock_message(stubs = {})
+  @message ||= mock_model(Message, stubs.merge!(
+      { :data => { :some => "value" }, :discard! => true, :discarded? => false }))
+end

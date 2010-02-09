@@ -1,3 +1,5 @@
+require 'gate_commands'
+
 class Gate
   include LoggedAction
   
@@ -30,14 +32,18 @@ class Gate
   end
   
   def process(message)
+    return if message.discarded?
+    Message.current = message
     processing_list.each do |description, proc|
       logged_action "Running Process", description do
         proc.call(message.data)
       end
+      return if message.discarded?
     end
   end
   
   def deliver_to_receivers(message)
+    return if message.discarded?
     raise "No receivers have been defined." if receivers.empty?
     
     receivers.each do |receiver|

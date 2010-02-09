@@ -19,11 +19,15 @@ describe Message do
       m = Message.create!(@valid_attributes)
       m.exactly_received_at.should == moment.to_f
     end
+    
+    it "should provide access to the current message" do
+      Message.current = @message
+      Message.current.should == @message
+    end
   end
    
   
-  describe "processing gates" do
-    
+  describe "processing gates" do 
     def mock_gate
       @mock_gate ||= mock("Gate", :process => true, :deliver_to_receivers => true)
     end
@@ -47,7 +51,6 @@ describe Message do
       Measurement.should_receive(:record).with(@message)
       @message.deliver!
     end
-    
   end
   
 end
