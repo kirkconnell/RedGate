@@ -50,8 +50,7 @@ class Gate
   def deliver(message)
     return if message.discarded?
     if queue?
-      message.in_queue = true
-      message.save
+      message.push!
     else
       deliver_to_receivers(message)
     end

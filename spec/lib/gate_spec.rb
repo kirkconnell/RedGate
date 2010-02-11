@@ -82,8 +82,8 @@ describe Gate do
       end
       
       it "should figure out if it's delivering through ActiveResource of through a message queue" do
-        m = mock_message(:save => true, :in_queue= => true)
-        m.should_receive(:save).and_return(true)
+        m = mock_message(:save => true, :push! => true)
+        m.should_receive(:push!).and_return(true)
         
         g = Gate.new :queued, :queue => true
         g.should_not_receive(:deliver_to_receivers)

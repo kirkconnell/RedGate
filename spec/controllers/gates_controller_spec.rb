@@ -51,18 +51,7 @@ describe GatesController do
                       :save => false}))     
       post :receive, :gate_name => "test", :message => mock_message_hash
       assigns(:error).should_not be_nil
-    end
-    
-    it "should enqueue the message for processing" do
-      Message.stub!(:new).and_return(
-        mock_message({:data => mock_message_hash, 
-                      :gate_name => :test, 
-                      :save => true, 
-                      :send_later => true}))
-      mock_message.should_receive(:send_later).with(:deliver!).and_return(true)
-      post :receive, :gate_name => "test", :message => mock_message_hash
-    end
-    
+    end    
   end
 
   # describe "dealing with message retrieval requests" do
