@@ -2,18 +2,18 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe GatesController do
   
+  def mock_message_hash
+    @message_hash ||=  { :first => "first", :second => "second" }
+  end
+  
+  def mock_message(stubs = {})
+    @message ||= mock_model(Message, stubs)
+  end
+  
   describe "receiving messages" do
     before(:each) do
       gate :test
       receiver "http://www.example.com/sample"
-    end
-    
-    def mock_message_hash
-      @message_hash ||=  { :first => "first", :second => "second" }
-    end
-    
-    def mock_message(stubs = {})
-      @message ||= mock_model(Message, stubs)
     end
     
     it "should reject posts to unexisting gates" do
@@ -64,12 +64,20 @@ describe GatesController do
       assigns(:error).should_not be_nil
     end
     
-    it "should should get latest message from queue" do
-      m = Message.create!(:gate_name => "test")
+    it "should get latest message from queue" do
+      m = Message.create!(:gate_name => "test", :data => mock_message_hash)
       m.push!
       
       get :retrieve, :gate_name => "test"
       assigns(:message).id.should == m.id
+    end
+    
+    it "should render the message data" do
+      msg = mock_message(:data => mock_message_hash, :gate_name => "test")
+      Message.stub!(:pop!).and_return(msg)
+      msg.should_receive :data
+
+      get :retrieve, :gate_name => "test"
     end
     
     it "should not crash if there's nothing on the queue" do

@@ -41,8 +41,10 @@ class Message < ActiveRecord::Base
   def self.pop!
     msg = find(:first, :conditions => ["in_queue = ?", true], :order => "exactly_received_at")
     unless msg.nil?
-      msg.update_attribute :in_queue, false
-      Measurement.record msg
+      Message.transaction do
+        msg.update_attribute :in_queue, false
+        Measurement.record msg
+      end
     end
     msg
   end

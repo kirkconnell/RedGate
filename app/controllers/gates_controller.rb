@@ -27,7 +27,7 @@ class GatesController < ApplicationController
         if @message.nil?
           format.xml { render :nothing => true, :status => 404 }
         else
-          format.xml{ render :xml => @message }
+          format.xml{ render :xml => @message.data.to_xml(:root=> @message.gate_name.singularize) }
         end
       else
         @error = { :error => "Gate not found." }

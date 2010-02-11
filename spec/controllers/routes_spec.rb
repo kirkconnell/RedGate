@@ -7,5 +7,5 @@ describe ApplicationController do
   
   it "should recognize dropbox URIs" do
     dropbox_path("sample").should == "/sample"
-  end
+  end  
 end
