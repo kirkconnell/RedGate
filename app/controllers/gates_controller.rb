@@ -1,13 +1,13 @@
 class GatesController < ApplicationController
 
   def receive
-    gate = Gate.find params[:gate_name]
+    gate = Gate.find(params[:gate_name])
     respond_to do |format|
       if gate
         data = get_data_from(params)
         @message = Message.new(:data => data, :gate_name => gate.name.to_s)
         if @message.save
-          format.xml {render :nothing => true, :status => :created }
+          format.xml { render :nothing => true, :status => :created }
         else
           @error = { :error => "Message couldn't be saved. \n #{@message.errors}" }
           format.xml { render :xml => @error, :status => :unprocessable_entity }
@@ -20,9 +20,19 @@ class GatesController < ApplicationController
   end
   
   def retrieve
-    @error = { :error => "Gate not found." }
+    gate = Gate.find(params[:gate_name])
     respond_to do |format|
-      format.xml { render :xml => @error, :status => 404 }
+      if gate
+        @message = Message.pop!
+        if @message.nil?
+          format.xml { render :nothing => true, :status => 404 }
+        else
+          format.xml{ render :xml => @message }
+        end
+      else
+        @error = { :error => "Gate not found." }
+        format.xml { render :xml => @error, :status => 404 }
+      end
     end
   end
   

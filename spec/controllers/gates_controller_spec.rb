@@ -53,11 +53,29 @@ describe GatesController do
       assigns(:error).should_not be_nil
     end    
   end
-
-  # describe "dealing with message retrieval requests" do
-  #     it "should reject unexisting gate retrieval requests" do
-  #       get :retrieve, :gate_name => "apples"
-  #       assigns(:error).should_not be_nil
-  #     end
-  #   end
+  
+  describe "handling queued messages" do
+    before(:each) do
+      gate :test, :queue => true
+    end
+    
+    it "should reject unexisting gate retrieval requests" do
+      get :retrieve, :gate_name => "apples"
+      assigns(:error).should_not be_nil
+    end
+    
+    it "should should get latest message from queue" do
+      m = Message.create!(:gate_name => "test")
+      m.push!
+      
+      get :retrieve, :gate_name => "test"
+      assigns(:message).id.should == m.id
+    end
+    
+    it "should not crash if there's nothing on the queue" do
+      get :retrieve, :gate_name => "test"
+      assigns(:error).should be_nil
+      assigns(:message).should be_nil
+    end
+  end
 end
