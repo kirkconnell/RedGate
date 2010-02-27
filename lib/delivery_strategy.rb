@@ -1,5 +1,4 @@
 class DeliveryStrategy
-  
   def self.for(gate, receiver)
     Delivery::ActiveResourceDeliveryStrategy.new options_for(gate, slasherize(receiver))
   end
@@ -22,6 +21,5 @@ class DeliveryStrategy
     else
       string + "/"
     end
-  end
-  
+  end 
 end

@@ -89,7 +89,6 @@ describe Message do
         m.save
         m.should_not be_in_queue
       end
-      
     end
   end
   
@@ -120,7 +119,7 @@ describe Message do
       m = Message.create(@valid_attributes)
       m.push!
       
-      Message.pop!.id.should == m.id
+      Message.pop!("test_gate").id.should == m.id
     end
     
     it "should record the measurement of the popped message" do
@@ -128,7 +127,7 @@ describe Message do
       m.push!
       Measurement.should_receive(:record)
       
-      Message.pop!
+      Message.pop!("test_gate")
     end
     
     it "should pop the first element pushed" do
@@ -137,12 +136,26 @@ describe Message do
       m2 = Message.create!(@valid_attributes)
       m2.push!
       
-      Message.pop!.id.should == m1.id
-      Message.pop!.id.should == m2.id
+      Message.pop!("test_gate").id.should == m1.id
+      Message.pop!("test_gate").id.should == m2.id
     end
     
     it "should return nil if the queue is empty" do
-      Message.pop!.should be_nil
+      Message.pop!("test_gate").should be_nil
+    end
+    
+    it "should only return messages of the correct queue type" do
+      gate :another_one
+      m2 = Message.create(:gate_name => "another_one", :data => {:field => "data"})
+      m2.push!
+      m1 = Message.create!(@valid_attributes)
+      m1.push!
+      
+      
+      Message.pop!("test_gate").id.should == m1.id
+      Message.pop!("test_gate").should be_nil
+      Message.pop!("another_one").id.should == m2.id
+      Message.pop!("another_one").should be_nil
     end
   end
 end

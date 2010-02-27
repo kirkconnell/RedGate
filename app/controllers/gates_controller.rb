@@ -23,7 +23,7 @@ class GatesController < ApplicationController
     gate = Gate.find(params[:gate_name])
     respond_to do |format|
       if gate
-        @message = Message.pop!
+        @message = Message.pop!(params[:gate_name])
         if @message.nil?
           format.xml { render :nothing => true, :status => 404 }
         else

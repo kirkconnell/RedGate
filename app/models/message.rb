@@ -38,8 +38,9 @@ class Message < ActiveRecord::Base
     save! unless options[:dont_save]
   end
   
-  def self.pop!
-    msg = find(:first, :conditions => ["in_queue = ?", true], :order => "exactly_received_at")
+  def self.pop!(gate_name)
+    msg = find( :first, :conditions => ["in_queue = ? and gate_name = ?", true, gate_name], 
+                :order => "exactly_received_at")
     unless msg.nil?
       Message.transaction do
         msg.update_attribute :in_queue, false
