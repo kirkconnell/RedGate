@@ -40,7 +40,7 @@ describe Message do
       m = Message.new(@valid_attributes)
       m.push!(:dont_save => true)
       m.should be_new_record
-    end
+    end    
   end
   
   describe "while saving" do
