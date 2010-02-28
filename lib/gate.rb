@@ -58,13 +58,18 @@ class Gate
   
   def deliver_to_receivers(message)
     raise "No receivers have been defined." if receivers.empty?
-    
     receivers.each do |receiver|
-      logged_action "Delivering Message", receiver do
-        strat = DeliveryStrategy.for name, receiver
-        strat.load_with(message.data)
-        strat.deliver
-      end
+      http_deliver message, receiver
+    end
+  end
+  
+  private
+  
+  def http_deliver(message, receiver)
+    logged_action "Delivering Message", receiver do
+      http = Delivery::HttpDelivery.new(:gate => name, :uri => receiver)
+      http.load_with(message.data)
+      http.deliver
     end
   end
 end

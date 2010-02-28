@@ -2,6 +2,7 @@ class Delivery::HttpDelivery
   attr_accessor :ar
   
   def initialize(options={})
+    options.merge!(extract_options_from(options[:uri]))
     @host = options[:host]
     @element = options[:element]
     @gate_name = options[:gate]
@@ -40,6 +41,24 @@ class Delivery::HttpDelivery
       raise "The MessageDelivery object hasn't been created yet."
     else
       ar.save
+    end
+  end
+  
+  def extract_options_from(uri)
+    if /(https?:\/\/.*\/)(.*)\// === slasherize(uri)
+      { :host => $1.to_s, 
+        :element => ActiveSupport::Inflector.singularize($2).to_s }
+    else
+      raise "The receiver uri '#{receiver_uri}' was not defined correctly."
+    end
+  end
+  
+  private
+  def slasherize(string)
+    if string.last == '/'
+      string
+    else
+      string + "/"
     end
   end
     

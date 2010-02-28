@@ -33,8 +33,8 @@ describe Gate do
       @ar ||= mock("ActiveResource::Base", stubs.merge!({:save => true}))
     end
     
-    def mock_strategy(stubs={})
-      @strategy ||= mock(DeliveryStrategy, stubs.merge!({:load_with => true, :deliver => true}))
+    def mock_delivery(stubs={})
+      @delivery ||= mock(Delivery::HttpDelivery, stubs.merge!({:load_with => true, :deliver => true}))
     end
     
     it "should provide a way to look for existing gates by name" do
@@ -92,7 +92,7 @@ describe Gate do
       
       describe "delivering to one or more receivers" do
         it "should be able to deliver message to receivers" do
-          DeliveryStrategy.stub!(:for).and_return(mock_strategy)
+          Delivery::HttpDelivery.stub!(:new).and_return(mock_delivery)
           @gate.deliver_to_receivers mock_message
         end
 
