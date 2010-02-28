@@ -1,4 +1,4 @@
-class Delivery::ActiveResourceDeliveryStrategy
+class Delivery::HttpDelivery
   attr_accessor :ar
   
   def initialize(options={})

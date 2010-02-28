@@ -1,6 +1,6 @@
 class DeliveryStrategy
   def self.for(gate, receiver)
-    Delivery::ActiveResourceDeliveryStrategy.new options_for(gate, slasherize(receiver))
+    Delivery::HttpDelivery.new options_for(gate, slasherize(receiver))
   end
   
   def self.options_for(gate, receiver_uri)

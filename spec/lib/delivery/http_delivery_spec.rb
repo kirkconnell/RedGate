@@ -1,13 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Delivery::ActiveResourceDeliveryStrategy do
+describe Delivery::HttpDelivery do
   
   def mock_ar(stubs = {})
     mock("ActiveResource", stubs)
   end
   
   before(:each) do
-    @strat = Delivery::ActiveResourceDeliveryStrategy.new(:host => "http://test.example.com/", 
+    @strat = Delivery::HttpDelivery.new(:host => "http://test.example.com/", 
                                                           :element => "test", :gate => :sample)
   end
   

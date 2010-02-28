@@ -19,7 +19,7 @@ describe DeliveryStrategy do
   end
   
   it "should return an ActiveResourceDeliveryStrategy if it receives a uri" do
-    DeliveryStrategy.for(:sample, "http://example.com/folks/").should be_kind_of(Delivery::ActiveResourceDeliveryStrategy)
+    DeliveryStrategy.for(:sample, "http://example.com/folks/").should be_kind_of(Delivery::HttpDelivery)
   end
   
 end
