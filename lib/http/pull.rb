@@ -1,8 +1,12 @@
 class Http::Pull
+  include Http::URIAnalizer
+  include Http::ActiveResourceGenerator
+  
   def initialize(options={})
     options[:interval] ||= 300
     raise "A source URI is required to create an HttpPuller." if options[:from].nil?
-    @options = options
+    @options = options.merge(extract_options_from(options[:from]))
+    initialize_type_store @options
   end
   
   def interval
@@ -10,6 +14,7 @@ class Http::Pull
   end
   
   def http_source
-    "whatever!"
+    generate_type
+    stored_type
   end 
 end

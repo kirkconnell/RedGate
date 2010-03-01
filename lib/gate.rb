@@ -66,7 +66,7 @@ class Gate
   def http_deliver(message_data, receiver)
     logged_action "Delivering Message", receiver do
       http = Http::Delivery.new(:gate => name, :uri => receiver)
-      http.load_with(message_data)
+      http.data = message_data
       http.deliver
     end
   end

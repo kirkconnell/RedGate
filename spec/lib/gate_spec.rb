@@ -34,7 +34,7 @@ describe Gate do
     end
     
     def mock_delivery(stubs={})
-      @delivery ||= mock(Http::Delivery, stubs.merge!({:load_with => true, :deliver => true}))
+      @delivery ||= mock(Http::Delivery, stubs.merge!({:data= => {}, :deliver => true}))
     end
     
     it "should provide a way to look for existing gates by name" do
