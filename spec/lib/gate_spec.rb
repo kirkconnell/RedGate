@@ -34,7 +34,7 @@ describe Gate do
     end
     
     def mock_delivery(stubs={})
-      @delivery ||= mock(Delivery::HttpDelivery, stubs.merge!({:load_with => true, :deliver => true}))
+      @delivery ||= mock(Http::Delivery, stubs.merge!({:load_with => true, :deliver => true}))
     end
     
     it "should provide a way to look for existing gates by name" do
@@ -92,7 +92,7 @@ describe Gate do
       
       describe "delivering to one or more receivers" do
         it "should be able to deliver message to receivers" do
-          Delivery::HttpDelivery.stub!(:new).and_return(mock_delivery)
+          Http::Delivery.stub!(:new).and_return(mock_delivery)
           @gate.deliver_to_receivers mock_message
         end
 

@@ -1,13 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Delivery::HttpDelivery do
+describe Http::Delivery do
   
   def mock_ar(stubs = {})
     mock("ActiveResource", stubs)
   end
   
   before(:each) do
-    @http = Delivery::HttpDelivery.new(:gate => :sample, :uri => "http://test.example.com/tests")
+    @http = Http::Delivery.new(:gate => :sample, :uri => "http://test.example.com/tests")
   end
   
   describe "creating ActiveResource class" do
@@ -30,19 +30,18 @@ describe Delivery::HttpDelivery do
       host = "http://test.example.com/"
       data = {:some_field => "stuff that I'm sending"}
       @http.load_with(data)
-      @http.stored_type_for(:sample, host).new.should be_kind_of(ActiveResource::Base)
+      @http.stored_type.new.should be_kind_of(ActiveResource::Base)
     end
 
     it "should look on the stored types before creating one of their own" do
       data = {:some_field => "stuff that I'm sending"}
-      @http.should_receive(:stored_type_for).with(:sample, "http://test.example.com/").and_return(nil)
+      @http.should_receive(:stored_type).and_return(nil, mock_ar.class)
       @http.load_with(data)
     end
 
     it "should create ActiveResource object from the stored type if one exists" do
       data = {:some_field => "stuff that I'm sending"}
-      @http.should_receive(:stored_type_for).twice.with(:sample,
-                            "http://test.example.com/").and_return(mock_ar.class)
+      @http.should_receive(:stored_type).twice.and_return(mock_ar.class)
 
       @http.load_with(data)
     end
@@ -56,24 +55,4 @@ describe Delivery::HttpDelivery do
       @http.deliver
     end
   end
-  
-  describe "parsing delivery uri's" do
-    it "should create options based on the receiver" do
-      sample_options = { :host => "http://example.com/", :element => "folk"}
-      @http.extract_options_from("http://example.com/folks/").should == sample_options
-    end
-
-    it "should complain if the receiver uri is malformed" do
-      lambda {@http.extract_options_from("htp://example.com")}.should raise_error
-    end
-
-    it "should allow https uris" do
-      lambda {@http.extract_options_from("https://example.com/secure/")}.should_not raise_error
-    end
-
-    it "should allow uris without the trailing /" do
-      lambda {@http.extract_options_from("http://example.com/forgot")}.should_not raise_error
-    end
-  end
-  
 end
