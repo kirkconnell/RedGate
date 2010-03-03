@@ -22,12 +22,13 @@ class Gate
   end
   
   attr_accessor :name
-  attr_reader :processing_list, :receivers
+  attr_reader :processing_list, :receivers, :pulls
 
   def initialize(name, options={})
     self.name = name
     @processing_list = {}
     @receivers = []
+    @pulls = []
     @options = {:queue => false}.merge(options)
     Gate.register self
   end

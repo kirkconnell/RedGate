@@ -37,6 +37,26 @@ describe GateBuilder do
     g.receivers.should be_include("http://www.yahoo.com")
   end
   
+  describe "configuring pulling sources" do
+    it "should store pull objects in the gate structure" do
+      g = gate(:name)
+      pull :from => "http://www.google.com/resources/"
+      g.pulls.first.should be_kind_of Http::Pull
+    end
+    
+    it "should allow the definition of a single pull source" do
+      g = gate(:name)
+      pull :from => "http://www.google.com/resources/"
+      g.pulls.length.should == 1
+    end
+    
+    it "should allow the definition of variouse pull sources" do
+      g = gate(:name)
+      pull :from => ["http://www.source1.com/resources/", "http://www.source2.com/resources/"]
+      g.pulls.length.should == 2
+    end
+  end
+    
   describe "message queue configuration" do
     it "should accept parameters for creating a message queue" do
       gate(:name, :queue => true).should be_queue

@@ -1,6 +1,7 @@
 class Http::Pull
   include Http::URIAnalizer
   include Http::ActiveResourceGenerator
+  attr_accessor :block
   
   def initialize(options={})
     options[:interval] ||= 300
@@ -11,6 +12,10 @@ class Http::Pull
   
   def interval
     @options[:interval]
+  end
+  
+  def uri
+    @options[:from]
   end
   
   def http_source

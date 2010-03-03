@@ -21,6 +21,10 @@ describe Gate do
     it "should have an empty list of receivers" do
       @gate.receivers.should be_empty
     end
+    
+    it "should have an empty list of pulls" do
+      @gate.pulls.should be_empty
+    end
   end
   
   describe "configured and initialized" do
