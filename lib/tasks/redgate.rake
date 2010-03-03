@@ -6,8 +6,9 @@ namespace :redgate do
       puts "Terminating pulling worker process."
     else
       puts "Pulling resources from the following sources: #{Puller.instance.pulls.collect {|p| p.uri}.join(',')}"
-      # event handler
-      puts "Resource pulled."
+      Puller.start do |source, counter| 
+        puts "#{counter} #{counter > 1 ? "resource".pluralize : "resource"} pulled from #{source}."
+      end
     end
   end
 end

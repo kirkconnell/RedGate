@@ -14,8 +14,8 @@ describe Http::Pull do
     
     it "should store a block for custom pulls" do
       p = Http::Pull.new :gate => :sample, :from => "http://www.restgate.com/sample"
-      p.block = lambda { true }
-      p.block.call.should == true
+      p.custom_pull = lambda { true }
+      p.custom_pull.call.should == true
     end
   end
   

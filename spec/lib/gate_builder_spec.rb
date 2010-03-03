@@ -50,10 +50,16 @@ describe GateBuilder do
       g.pulls.length.should == 1
     end
     
-    it "should allow the definition of variouse pull sources" do
+    it "should allow the definition of various pull sources" do
       g = gate(:name)
       pull :from => ["http://www.source1.com/resources/", "http://www.source2.com/resources/"]
       g.pulls.length.should == 2
+    end
+    
+    it "should allow the definition of pulls with custome algorithm" do
+      g = gate(:name)
+      pull(:from => "http://www.google.com/resources/") { true }
+      g.pulls.first.custom_pull.should_not be_nil
     end
   end
     

@@ -19,15 +19,15 @@ def receivers(*hosts)
   hosts.each { |h| Gate.currently_configuring.receivers << h }
 end
 
-def pull(options={})
+def pull(options={}, &block)
   options[:interval] ||= 300 # This is Sparta!!!
   options[:gate] = Gate.currently_configuring.name
   if options[:from].kind_of? Array
     options[:from].each do |source|
-      Gate.currently_configuring.pulls << Http::Pull.new(options.merge({:from => source}))
+      Gate.currently_configuring.pulls << Http::Pull.new(options.merge({:from => source}, &block))
     end
   else
-    Gate.currently_configuring.pulls << Http::Pull.new(options)
+    Gate.currently_configuring.pulls << Http::Pull.new(options, &block)
   end
 end
 
