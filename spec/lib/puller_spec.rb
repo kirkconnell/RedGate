@@ -89,6 +89,10 @@ describe Puller do
       
       break_block = Proc.new { |source, count| Thread.exit }
       lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
+    end
+    
+    it "should process the resources as messages" do
+      flunk
     end 
   end
   
