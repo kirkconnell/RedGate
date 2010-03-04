@@ -26,7 +26,7 @@ describe Puller do
       create_sample_gate
       @pull = Puller.instance.pulls.first
       Puller.stub!(:sleep).and_return true
-      sample_pull.http_source.stub!(:all).and_return []
+      sample_pull.http_source.stub!(:find).and_return []
     end
     
     def sample_pull
@@ -37,6 +37,7 @@ describe Puller do
       lambda do
         Puller.start do |source, count| 
           "#{count} new #{count > 1 ? "message".pluralize : "message"} received."
+          break
         end
       end.should_not raise_error
     end
@@ -49,36 +50,46 @@ describe Puller do
     it "should sleep the interval" do
       sample_pull.should_receive(:interval).and_return(300)
       Puller.should_receive(:sleep).with(300).and_return(true)
+      
       counter = 0
-      Puller.run(sample_pull) do |source, count| 
+      break_block = Proc.new do |source, count| 
         counter += 1
-        break if counter == 2
+        Thread.exit if counter == 2
       end
+      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
     end
     
     it "should check if the pull is a custom pull" do
       sample_pull.should_receive(:custom_pull).and_return(nil)
-      Puller.run(sample_pull) { |source, count| break }
+      
+      break_block = Proc.new { |source, count| Thread.exit }
+      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
     end
     
     it "should consider parameterless custom pulls as not asking for an ActiveResource class" do
       mock_proc = mock("Proc", :call => [], :arity => 0)
       mock_proc.should_receive(:call).with no_args
       sample_pull.custom_pull = mock_proc
-      Puller.run(sample_pull) { |source, count| break }
+      
+      break_block = Proc.new { |source, count| Thread.exit }
+      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
     end
     
     it "should consider custom pulls with one parameter as asking for an ActiveResouce class" do
       mock_proc = mock("Proc", :call => [], :arity => 1)
       mock_proc.should_receive(:call).with(sample_pull.http_source)
       sample_pull.custom_pull = mock_proc
-      Puller.run(sample_pull) { |source, count| break }
+      
+      break_block = Proc.new { |source, count| Thread.exit }
+      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
     end
     
     it "should call 'all' on the ActiveResource class if no custom block is provided" do
-      sample_pull.http_source.should_receive(:all).and_return([])
-      Puller.run(sample_pull) { |source, count| break }
-    end
+      sample_pull.http_source.should_receive(:find).with(:all).and_return([])
+      
+      break_block = Proc.new { |source, count| Thread.exit }
+      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
+    end 
   end
   
 end

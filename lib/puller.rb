@@ -10,13 +10,18 @@ class Puller
   end
   
   def self.start(&block)
-    instance.pulls.each { |pull| Thread.start { run(pull, block) } }
+    thread_pool = []
+    instance.pulls.each do |pull|
+      thread_pool << Thread.start { run(pull, block) }
+    end
+    
+    thread_pool.each { |t| t.join }
   end
-  
-  def self.run(pull, &block)
+    
+  def self.run(pull, block)
     loop do
       messages = if pull.custom_pull.nil?
-        pull.http_source.all
+        pull.http_source.find(:all)
       elsif pull.custom_pull.arity == 0
         pull.custom_pull.call
       else
