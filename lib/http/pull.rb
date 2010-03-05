@@ -5,7 +5,7 @@ class Http::Pull
   
   def initialize(options={}, &block)
     options[:interval] ||= 300
-    raise "A source URI is required to create an HttpPuller." if options[:from].nil?
+    raise "A source URI is required to create an Http::Pull." if options[:from].nil?
     @options = options.merge(extract_options_from(options[:from]))
     initialize_type_store @options
     @custom_pull = block
@@ -13,6 +13,10 @@ class Http::Pull
   
   def interval
     @options[:interval]
+  end
+  
+  def gate_name
+    @options[:gate]
   end
   
   def uri

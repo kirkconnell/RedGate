@@ -11,26 +11,29 @@ class Puller
   
   def self.start(&block)
     thread_pool = []
+    
     instance.pulls.each do |pull|
-      thread_pool << Thread.start { run(pull, block) }
+      thread_pool << Thread.start { loop { iterate(pull, block) } }
     end
     
     thread_pool.each { |t| t.join }
   end
+  
+  def self.iterate(pull, block = nil)
+    messages = pull_messages(pull)
+    messages.each { |msg| Message.create!(:data => msg.attributes, :gate_name => pull.gate_name.to_s) }
+    block.call(pull.uri, messages.count) unless block.nil?
+    sleep(pull.interval)
+  end
     
-  def self.run(pull, block)
-    loop do
-      messages = if pull.custom_pull.nil?
-        pull.http_source.find(:all)
-      elsif pull.custom_pull.arity == 0
-        pull.custom_pull.call
-      else
-        pull.custom_pull.call(pull.http_source)
-      end
-      
-      block.call(pull.uri, messages.count) unless block.nil?
-      sleep(pull.interval)      
-    end      
+  def self.pull_messages(pull)
+    if pull.custom_pull.nil?
+      pull.http_source.find(:all)
+    elsif pull.custom_pull.arity == 0
+      pull.custom_pull.call
+    else
+      pull.custom_pull.call(pull.http_source)
+    end
   end
   
   private

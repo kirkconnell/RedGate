@@ -24,76 +24,67 @@ describe Puller do
   describe "running the process" do
     before(:each) do
       create_sample_gate
-      @pull = Puller.instance.pulls.first
       Puller.stub!(:sleep).and_return true
       sample_pull.http_source.stub!(:find).and_return []
     end
     
     def sample_pull
-      @pull
-    end
-    
-    it "should provide a way to call a block once messages are received from a source" do
-      lambda do
-        Puller.start do |source, count| 
-          "#{count} new #{count > 1 ? "message".pluralize : "message"} received."
-          break
-        end
-      end.should_not raise_error
+      @pull ||= Puller.instance.pulls.first
     end
         
     it "should start a thread for each configured pull" do
-      Puller.should_receive(:run).with(sample_pull, nil)
+      mock_thread = mock(Thread, :join => true)
+      Thread.should_receive(:start).and_return(mock_thread)
       Puller.start
     end
     
-    it "should sleep the interval" do
-      sample_pull.should_receive(:interval).and_return(300)
-      Puller.should_receive(:sleep).with(300).and_return(true)
-      
-      counter = 0
-      break_block = Proc.new do |source, count| 
-        counter += 1
-        Thread.exit if counter == 2
+    describe "pulling messages from a source" do
+      it "should check if the pull is a custom pull" do
+        sample_pull.should_receive(:custom_pull).and_return(nil)
+        Puller.pull_messages(sample_pull)
       end
-      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
+
+      it "should consider parameterless custom pulls as not asking for an ActiveResource class" do
+        mock_proc = mock("Proc", :call => [], :arity => 0)
+        mock_proc.should_receive(:call).with no_args
+        sample_pull.custom_pull = mock_proc
+        Puller.pull_messages(sample_pull)
+      end
+
+      it "should consider custom pulls with one parameter as asking for an ActiveResouce class" do
+        mock_proc = mock("Proc", :call => [], :arity => 1)
+        mock_proc.should_receive(:call).with(sample_pull.http_source)
+        sample_pull.custom_pull = mock_proc
+        Puller.pull_messages(sample_pull)
+      end
+
+      it "should call 'all' on the ActiveResource class if no custom block is provided" do
+        sample_pull.http_source.should_receive(:find).with(:all).and_return([])
+        Puller.pull_messages(sample_pull)
+      end
     end
     
-    it "should check if the pull is a custom pull" do
-      sample_pull.should_receive(:custom_pull).and_return(nil)
+    describe "after receiving one or more messages" do
+      before(:each) do
+        Puller.stub!(:pull_messages).and_return [mock_msg]
+        
+      end
       
-      break_block = Proc.new { |source, count| Thread.exit }
-      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
-    end
-    
-    it "should consider parameterless custom pulls as not asking for an ActiveResource class" do
-      mock_proc = mock("Proc", :call => [], :arity => 0)
-      mock_proc.should_receive(:call).with no_args
-      sample_pull.custom_pull = mock_proc
+      def mock_msg
+        @mock_msg ||= mock(Message, :attributes => {})
+      end
       
-      break_block = Proc.new { |source, count| Thread.exit }
-      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
+      it "should provide a way to call an informative callback when messages are received from a source" do
+        counter = 0
+        proc = Proc.new { |source, count| counter += count }
+        Puller.iterate sample_pull, proc
+        counter.should == 1
+      end
+
+      it "should process the resources as messages" do
+        Message.should_receive(:create!).with(:data => mock_msg.attributes, :gate_name => "sample")
+        Puller.iterate sample_pull
+      end
     end
-    
-    it "should consider custom pulls with one parameter as asking for an ActiveResouce class" do
-      mock_proc = mock("Proc", :call => [], :arity => 1)
-      mock_proc.should_receive(:call).with(sample_pull.http_source)
-      sample_pull.custom_pull = mock_proc
-      
-      break_block = Proc.new { |source, count| Thread.exit }
-      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
-    end
-    
-    it "should call 'all' on the ActiveResource class if no custom block is provided" do
-      sample_pull.http_source.should_receive(:find).with(:all).and_return([])
-      
-      break_block = Proc.new { |source, count| Thread.exit }
-      lambda {Puller.run(sample_pull, break_block)}.should raise_error(SystemExit)
-    end
-    
-    it "should process the resources as messages" do
-      flunk
-    end 
   end
-  
 end
