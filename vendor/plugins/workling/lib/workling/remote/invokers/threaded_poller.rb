@@ -34,6 +34,7 @@ module Workling
           end
           
           # Wait for all workers to complete
+          preload_message_class_hax
           @workers.list.each { |t| t.join }
 
           logger.debug("Reaped listener threads. ")
@@ -41,6 +42,10 @@ module Workling
           # Clean up all the connections.
           ActiveRecord::Base.verify_active_connections!
           logger.debug("Cleaned up connection: out!")
+        end
+        
+        def preload_message_class_hax
+          Message
         end
       
         # Check if all Worker threads have been started. 
