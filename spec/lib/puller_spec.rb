@@ -67,7 +67,7 @@ describe Puller do
     describe "after receiving one or more messages" do
       before(:each) do
         Puller.stub!(:pull_messages).and_return [mock_msg]
-        
+        Message.stub!(:create!)
       end
       
       def mock_msg

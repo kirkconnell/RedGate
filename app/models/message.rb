@@ -16,7 +16,11 @@ class Message < ActiveRecord::Base
   end
   
   def schedule_delivery
-    send_later :deliver!
+    if gate.guaranteed?
+      send_later :deliver!
+    else
+      MessageWorker.asynch_deliver(:message => self)
+    end
   end
   
   def deliver!

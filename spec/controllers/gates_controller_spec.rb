@@ -14,6 +14,7 @@ describe GatesController do
     before(:each) do
       gate :test
       receiver "http://www.example.com/sample"
+      MessageWorker.stub!(:asynch_deliver).and_return(true)
     end
     
     it "should reject posts to unexisting gates" do

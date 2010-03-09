@@ -2,6 +2,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Message do
   before(:each) do
+    MessageWorker.stub!(:asynch_deliver).and_return(true)
+  end
+  
+  before(:each) do
     gate :test_gate
     @valid_attributes = {
       :data => {:message => "message"},
@@ -10,7 +14,11 @@ describe Message do
   end
   
   def mock_gate
-    @mock_gate ||= mock("Gate", :process => true, :deliver => true, :queue? => false)
+    @mock_gate ||= mock("Gate", 
+                    :process => true, 
+                    :deliver => true, 
+                    :queue? => false, 
+                    :guaranteed? => false)
   end
 
   describe "management activities" do
@@ -44,7 +52,15 @@ describe Message do
   end
   
   describe "delivery" do
-    it "should call send_later to delay the delivery" do
+    it "should call workling if the gate is not guaranteed" do
+      Gate.registered_gates[:test_gate].stub!(:guaranteed? => false)
+      m = Message.new(@valid_attributes)
+      MessageWorker.should_receive(:asynch_deliver).with(:message => m)
+      m.save
+    end
+    
+    it "should use delayed_jobs if the gate is guaranteed" do
+      Gate.registered_gates[:test_gate].stub!(:guaranteed? => true)
       m = Message.new(@valid_attributes)
       m.should_receive(:send_later).with(:deliver!)
       m.save
