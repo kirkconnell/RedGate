@@ -43,6 +43,14 @@ describe Message do
     end    
   end
   
+  describe "delivery" do
+    it "should call send_later to delay the delivery" do
+      m = Message.new(@valid_attributes)
+      m.should_receive(:send_later).with(:deliver!)
+      m.save
+    end
+  end
+  
   describe "while saving" do
     it "should verify gate type" do
       m = Message.new(@valid_attributes)
@@ -52,9 +60,9 @@ describe Message do
     end
     
     describe "normal gate delivery" do
-      it "should call send_later to delay the job after saving for gates that are not queued" do
+      it "should schedule a delivery for normal gates" do
         m = Message.new(@valid_attributes)
-        m.should_receive(:send_later).with(:deliver!)
+        m.should_receive(:schedule_delivery)
         m.save
       end
     end
@@ -70,10 +78,10 @@ describe Message do
         m.save
       end
       
-      it "should delay the processing of messages that have queue" do
+      it "should schedule the processing of messages that have queue" do
         process("sample") { |test| discard }
         m = Message.new(@valid_attributes)
-        m.should_receive(:send_later).with(:deliver!)
+        m.should_receive(:schedule_delivery)
         m.save
       end
       

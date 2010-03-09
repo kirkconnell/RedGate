@@ -8,11 +8,15 @@ class Message < ActiveRecord::Base
   end
   
   def after_create
-    send_later :deliver! if needs_to_be_delayed?
+    schedule_delivery if needs_to_be_delayed?
   end
   
   def gate
     Gate.registered_gates[self.gate_name.to_sym]
+  end
+  
+  def schedule_delivery
+    send_later :deliver!
   end
   
   def deliver!
