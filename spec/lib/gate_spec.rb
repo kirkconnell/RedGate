@@ -25,6 +25,10 @@ describe Gate do
     it "should have an empty list of pulls" do
       @gate.pulls.should be_empty
     end
+    
+    it "should by default use starling" do
+      @gate.should_not be_guaranteed
+    end
   end
   
   describe "configured and initialized" do

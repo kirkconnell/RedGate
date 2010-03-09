@@ -29,8 +29,12 @@ class Gate
     @processing_list = {}
     @receivers = []
     @pulls = []
-    @options = {:queue => false}.merge(options)
+    @options = {:queue => false, :guaranteed => false}.merge(options)
     Gate.register self
+  end
+  
+  def guaranteed?
+    @options[:guaranteed]
   end
   
   def queue?

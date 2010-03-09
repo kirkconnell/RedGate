@@ -78,6 +78,12 @@ describe GateBuilder do
       lambda { receivers "http://www.google.com" }.should raise_error
     end
   end
+  
+  describe "guaranteed channel configuration" do
+    it "should accept parameters for creating a guaranteed channel" do
+      gate(:name, :guaranteed => true).should be_guaranteed
+    end
+  end
     
 end
 
