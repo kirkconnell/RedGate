@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  gate_name: MyString
+  uri: MyString
+
+two:
+  gate_name: MyString
+  uri: MyString
