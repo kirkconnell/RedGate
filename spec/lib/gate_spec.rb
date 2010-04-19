@@ -29,6 +29,13 @@ describe Gate do
     it "should by default use starling" do
       @gate.should_not be_guaranteed
     end
+    
+    it "should add subscribed receivers to the recipients list" do
+      mock_subscription = mock(Subscription, :gate_name => "sample", :uri => "http://tests.com")
+      Subscription.stub!(:find_by_gate_name).with(:all, "sample").and_return [mock_subscription]
+      sample_gate = Gate.new(:sample)
+      sample_gate.receivers.first.should == "http://tests.com"
+    end
   end
   
   describe "configured and initialized" do

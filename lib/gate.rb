@@ -27,10 +27,19 @@ class Gate
   def initialize(name, options={})
     self.name = name
     @processing_list = {}
-    @receivers = []
+    @receivers = subscribed_receivers
     @pulls = []
     @options = {:queue => false, :guaranteed => false}.merge(options)
     Gate.register self
+  end
+  
+  def subscribed_receivers
+    subscriptions = Subscription.find_by_gate_name(:all, name.to_s)
+    if subscriptions.nil?
+      []
+    else
+      subscriptions.collect { |subscription| subscription.uri }
+    end
   end
   
   def guaranteed?
