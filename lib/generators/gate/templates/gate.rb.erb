@@ -1,0 +1,7 @@
+<%= render :gate_definition %>
+
+<% processes.each do |p| -%>
+	<%= render :process => p %>
+	
+<% end -%>
+<%= render :receivers %>
