@@ -7,51 +7,56 @@ describe GateGeneratorHelper do
   
   let(:helper) { TestHelper.new }
   
-  context "parsing arguments" do
-    it "should give a list of parsed options" do
-      helper.parse %w{--option1 --option2 --option=xxx uri1 uri2}
-      helper.gate_options.first.should == "option1"
-      helper.gate_options[1].should == "option2"
-      helper.gate_options.last.should == "option"
-    end
-  
-    it "should give a hash for options that have a specific value" do
-      helper.parse %w{--option1 --option2=yyy --option3=xxx uri1 uri2}
-      helper.gate_value_options[:option2].should == "yyy"
-      helper.gate_value_options[:option3].should == "xxx"
-    end
-  
-    it "should have no value options for arguments that have no value options" do
-      helper.parse %w{--option1 --option2 uri1 uri2}
-      helper.gate_value_options.should be_empty
+  context "parsing arguments" do   
+    context "for process definition" do
+      it "should have an empty list of processes when no processing option is given" do
+        helper.parse []
+        helper.processes.should be_empty
+      end
+      
+      it "should have a processor in the process list when the process option is given" do
+        helper.parse %w{processor}
+        helper.processes.length.should == 1
+        helper.processes.first.should == :processor
+      end
+      
+      it "should have a filter in the process list when the filter option is given" do
+        helper.parse %w{processor filter}
+        helper.processes.should be_include :filter
+      end
+      
+      it "should have a router in the process list when the router option is given" do
+        helper.parse %w{processor filter router}
+        helper.processes.should be_include :router
+      end
+      
+      it "should have a splitter in the process list when the splitter option is given" do
+        helper.parse %w{splitter}
+        helper.processes.should be_include :splitter
+      end
     end
     
-    it "should parse the list of receivers" do
-      helper.parse %w{--option1 --option2 --option=xxx uri1 uri2}
-      helper.receivers.first.should == "uri1"
-      helper.receivers.last.should == "uri2"
-    end
   end
   
   context "rendering" do
+    before(:each) do
+      helper.stub!(:file_name).and_return "samples"
+    end
+    
     context "gate defininition" do
-      before(:each) do
-        helper.stub!(:file_name).and_return "sample"
-      end
-      
       it "should render simple gate definitions" do
         helper.parse []
-        helper.render(:gate_definition).should == "gate :sample"
+        helper.render(:gate_definition).should == "gate :samples"
       end
       
       it "should render queue gate definitions" do
-        helper.parse %w{--queue}
-        helper.render(:gate_definition).should == "gate :sample, :queue => true"
+        helper.parse %w{queue}
+        helper.render(:gate_definition).should == "gate :samples, :queue => true"
       end
       
       it "should render guaranteed gate definitions" do
-        helper.parse %w{--guaranteed}
-        helper.render(:gate_definition).should == "gate :sample, :guaranteed => true"
+        helper.parse %w{guaranteed}
+        helper.render(:gate_definition).should == "gate :samples, :guaranteed => true"
       end
     end
     
@@ -73,35 +78,48 @@ describe GateGeneratorHelper do
     end
     
     context "process commands" do
-      it "should have an empty list of processes when no processing option is given" do
-        helper.parse []
-        helper.processes.should be_empty
+      it "should generate a process block" do
+        helper.render(:process => :processor).should == 
+"process \"sample processor\" do |sample|
+  # to do: process body
+end"
       end
       
-      it "should have a processor in the process list when the process option is given" do
-        helper.parse %w{--processor}
-        helper.processes.length.should == 1
-        helper.processes.first.should == :processor
+      it "should generate a filter block" do
+        helper.render(:process => :filter).should == 
+"process \"sample filter\" do |sample|
+  discard if false # to do: filter condition
+end"
       end
       
-      it "should have a filter in the process list when the filter option is given" do
-        helper.parse %w{--processor --filter}
-        helper.processes.should be_include :filter
+      it "should generate a router block" do
+        helper.render(:process => :router).should == 
+"process \"sample router\" do |sample|
+  # to do: write real conditions and uri's
+  if condition1
+    deliver :message => sample, :to => uri1
+  elseif condition2
+    deliver :message => sample, :to => uri2
+  else
+    deliver :message => sample, :to => uri3
+  end
+end"
       end
       
-      it "should have a router in the process list when the router option is given" do
-        helper.parse %w{--processor --filter --router}
-        helper.processes.should be_include :router
-      end
-      
-      it "should have a splitter in the process list when the splitter option is given" do
-        helper.parse %w{--splitter}
-        helper.processes.should be_include :splitter
-      end
-      
-      it "should have a normalizer in the process list when the normalizer option is given" do
-        helper.parse %w{--normalizer}
-        helper.processes.should be_include :normalizer
+      it "should generate a message splitter" do
+        helper.render(:process => :splitter).should ==
+"process \"sample splitter\" do |sample|
+  part1, part2, part3 = split(sample)
+  # to do: write the real uri's
+  deliver :message => part1, :to => uri1
+  deliver :message => part2, :to => uri2
+  deliver :message => part3, :to => uri3
+end
+
+def split(sample)
+  # to do: write the splitting logic
+  [sample, sample, sample]  
+end"
       end
     end
   end
